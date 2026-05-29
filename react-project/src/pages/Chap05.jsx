@@ -1,0 +1,28 @@
+import { useState } from "react";
+
+const Chap05 = () => {
+  const [text, setText] = useState("");
+  const [message, setMessage] = useState("값을 입력해보세요~");
+
+  const textHanlder = (e) => {
+    setText(e.target.value);
+    setMessage(e.target.value.length > 10 ? "너무길어요" : message);
+  };
+
+  return (
+    <>
+      <h3>입력값 받기</h3>
+      <br />
+      <br />
+      <input type="text" onChange={textHanlder} />
+      <br></br>
+      <br />
+      <label>사용자가 입력한 값: {text} </label>
+      <br />
+      <br />
+      <label>안내 메세지 : {message} </label>
+    </>
+  );
+};
+
+export default Chap05;
