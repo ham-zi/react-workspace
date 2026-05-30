@@ -1,8 +1,58 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Review = (props) => {
   const [review, setReview] = useState([]);
+  const [update, setUpdate] = useState(false);
+  const [drop, setDrop] = useState(false);
+  const navi = useNavigate();
+
+  const [content, setContent] = useState("");
+  const [newContent, setNewContent] = useState("");
+
+  const contentHandler = (e) => {
+    setContent(e.target.value);
+  };
+
+  const newContentHandler = (e) => {
+    setNewContent(e.target.value);
+    console.log(e.target.value);
+  };
+
+  const updateHandler = () => {
+    setUpdate(!update);
+    setDrop(false);
+  };
+
+  const dropHandler = () => {
+    setDrop(!drop);
+    setUpdate(false);
+  };
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+  };
+
+  const updateReview = () => {
+    axios
+      .patch(`http://localhost/api/busans/${props.id}/reviews`, {
+        content: content,
+        updateContent: newContent,
+      })
+      .then((result) => {
+        console.log(result);
+      });
+  };
+
+  const deleteReview = () => {
+    console.log(content);
+    axios
+      .delete(`http://localhost/api/busans/${props.id}/reviews`, {
+        data: { content: content },
+      })
+      .then((result) => {});
+  };
 
   useEffect(() => {
     axios
@@ -20,6 +70,38 @@ const Review = (props) => {
 
   return (
     <>
+      <button onClick={updateHandler}>수정버튼</button> ||
+      <button onClick={dropHandler}>삭제버튼</button>
+      {update && (
+        <form onClick={submitHandler}>
+          변경할 내용 :{" "}
+          <input
+            type="text"
+            placeholder="변경할 내용"
+            onChange={contentHandler}
+          />
+          수정내용 :{" "}
+          <input
+            type="text"
+            placeholder="수정할 내용"
+            onChange={newContentHandler}
+          />{" "}
+          <br />
+          <button onClick={updateReview}>수정 하기</button>
+        </form>
+      )}
+      {drop && (
+        <form onClick={submitHandler}>
+          삭제할 내용 :{" "}
+          <input
+            type="text"
+            placeholder="삭제할 내용 입력"
+            onChange={contentHandler}
+          />
+          <br />
+          <button onClick={deleteReview}>버튼</button>
+        </form>
+      )}
       {review.length != 0 ? (
         review.map((e, i) => (
           <div key={i}>
@@ -27,6 +109,7 @@ const Review = (props) => {
             <h4>{e.content}</h4>
             <h5>{e.createDate}</h5>
             <h5>별점 : {e.rating}</h5>
+            <br></br>
           </div>
         ))
       ) : (
